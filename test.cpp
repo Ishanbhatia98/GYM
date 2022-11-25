@@ -1,44 +1,46 @@
-#include <iostream>
+#include<bits/stdc++.h>
 using namespace std;
 
-int main() {
-	int t;
-	cin >> t;
-	while(t--){
-	    int x, y, z;
-	    cin >> x >> y >>z;
-	    int cnt[4];
-        for(int i=0;i<4;i++){cnt[i]=0;};
-	    cnt[x%4]++;
-	    cnt[y%4]++;
-	    cnt[z%4]++;
-	    int ans=-1;
-	    if(cnt[3]==3){
-	        ans = 6;
-	    }
-	    else if(cnt[3]==2){
-	        if(cnt[2]==1||cnt[1]==1) ans=5;
-	        else ans = 3;
-	     
-	    }
-	    else if(cnt[3]==1){
-	        if(cnt[2]==2) ans=5;
-	        else if(cnt[2]==1 && cnt[1]==1) ans=3;
-	        else if(cnt[2]==1 && cnt[0]==1) ans=3;
-	        else if(cnt[1]==2) ans=3;
-	        else if(cnt[1]==1 && cnt[0]==1) ans=2;
-	        else if(cnt[0]==2) ans=1;
-	        
-	    }
-	    else{
-	        if(cnt[2]==3) ans=4;
-	        else if(cnt[2]==2 && cnt[1]==1) ans =4;
-	        else if(cnt[1]==2) ans=3;
-	        else if(cnt[0]==2) ans=1;
-	        else ans = 2;
-	    }
-	   cout << ans << endl; 
-	};
+void buildTree(int* tree, int* arr, int startIndex, int endIndex, int treeNode){
+	if(startIndex==endIndex){
+		tree[treeNode] = arr[startIndex];
+		return; 
+	}
+	int mid = (startIndex+endIndex)/2;
+	buildTree(tree, arr, startIndex, mid, 2*treeNode);
+	buildTree(tree, arr,mid+1,endIndex,  2*treeNode+1);
+	tree[treeNode] = tree[2*treeNode]+tree[2*treeNode+1];
 
+void updateTree(int* tree, int* arr, int startIndex, int endIndex, int treeNode, int updateIndex){
+	if(startIndex==endIndex){
+		arr[updateIndex] = arr[updateIndex]=='1'?'0':'1';
+		tree[treeNode] = arr[updateIndex];
+		return;
+	}
+	int mid = (startIndex+endIndex)/2;
+	if(mid>updateIndex) updateTree(tree, arr, startIndex, mid, 2*treeNode, updateIndex);
+	else updateTree(tree, arr, mid+1, endIndex, 2*treeNode+1, updateIndex);
+	tree[treeNode] = tree[2*treeNode]+tree[2*treeNode+1];
+}
+
+string queryTree(int* tree, int* arr, int startIndex, int endIndex, int treeNode, int left, int right){
+	//completely outside
+	if(startIndex>right || endIndex<left) return "";
+	//complete inside
+	if(startIndex>=left && endIndex<=right) return tree[treeNode];
+	//partially inside and partially outside
+	int mid = (startIndex+endIndex)/2;
+	string leftTree = queryTree(tree, arr, startIndex, mid, 2*treeNode, left, right);
+	string rightTree = 	queryTree(tree, arr, mid+1, endIndex, 2*treeNode+1, left, right);
+	return leftTree+rightTree;
+}
+
+int main(){
+	int n, q;
+	cin >> n >> q;
+	string s;
+	cin >> s;
+	int* tree = new int[4*n];
+	buildTree()
 	return 0;
 }
